@@ -1,4 +1,4 @@
-import db from './db/sqlite/db';
+import db from './db';
 
 // 假设我们有个数据表users，有id、userName、userPassword、userType四个字段
 var a = 'select';
@@ -18,7 +18,7 @@ if (a === 'delete') {
       } else {
         console.log(666.202, result);
         if (result) {
-          console.log(666.2022, '删除结果：' + result);
+          console.log(666.2022, '删除记录数：' + result.affectedRows);
         }
       }
     }
@@ -30,8 +30,7 @@ if (a === 'delete') {
       table: 'user',
       // set: 'userName="GGGG"',
       set: ['userName="SSSS"', 'userPassword="FFFF"'],
-      where: 'id=10',
-      limit: 3,
+      limit: 10,
       order: 'id desc',
     },
     (err: any, result: any) => {
@@ -40,7 +39,12 @@ if (a === 'delete') {
       } else {
         console.log(666.202, result);
         if (result) {
-          console.log(666.2022, '修改结果：' + result);
+          console.log(
+            666.2022,
+            '修改记录数：' + result.changedRows,
+            '获取记录数：' + result.affectedRows,
+            '日志：' + result.message
+          );
         }
       }
     }
@@ -60,7 +64,12 @@ if (a === 'delete') {
       } else {
         console.log(666.202, result);
         if (result) {
-          console.log(666.2022, '增加结果：' + result);
+          console.log(
+            666.2022,
+            '增加记录数：' + result.affectedRows,
+            '当前ID：' + result.insertId,
+            '日志：' + result.message
+          );
         }
       }
     }
@@ -71,8 +80,7 @@ if (a === 'delete') {
       type: 'select',
       table: 'user',
       field: '*',
-      where: 'id>5',
-      limit: 1,
+      limit: 2,
       order: 'id desc',
     },
     (err: any, result: any) => {

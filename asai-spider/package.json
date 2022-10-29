@@ -11,7 +11,8 @@
   "dependencies": {
     "cheerio": "1.0.0-rc.12",
     "koa": "^2.13.4",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "sqlite3": "^5.1.2"
   },
   "devDependencies": {
     "@types/koa": "^2.13.5",

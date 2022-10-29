@@ -1,11 +1,12 @@
-var mysql = require('mysql');
-// 建立数据库连接池
-var pool = mysql.createPool({
-  host: 'localhost', // ip或域名
-  port: 3306, // 端口
-  user: 'root', // 登录账户
-  password: '909pub', // 登录密码
-  database: 'nodejsblog', // 数据库名
+var sqlite3 = require('sqlite3').verbose();
+
+// sqlites数据库地址
+var path = require('path');
+var sqliteDbPath = path.resolve(__dirname, './sqlite3.db');
+
+// 打开sqlites数据库
+var sqlite3Connection = new sqlite3.Database(sqliteDbPath, (err: any) => {
+  if (err) throw err;
 });
 
 type Istrings = string | string[] | undefined;
@@ -20,7 +21,7 @@ interface Idb {
   limit?: number;
 }
 
-class DbMySQL {
+class DbSQLite3 {
   pool: any;
   constructor(pool: any) {
     this.pool = pool;
@@ -61,6 +62,7 @@ class DbMySQL {
     return '';
   }
   makeSql(sql: Idb) {
+    // sqlite查询sql的时候，有些指定的语句不支持order与limit
     var sqls = sql.type;
     if (sqls === 'insert') {
       sqls += ' into';
@@ -70,14 +72,10 @@ class DbMySQL {
     } else if (sqls === 'delete') {
       sqls += ' from ' + sql.table;
       sqls += this.joinSql(sql, 'where');
-      sqls += this.joinSql(sql, 'order');
-      sqls += sql.limit ? ' limit ' + sql.limit : '';
     } else if (sqls === 'update') {
       sqls += ' ' + sql.table;
       sqls += this.joinSql(sql, 'set');
       sqls += this.joinSql(sql, 'where');
-      sqls += this.joinSql(sql, 'order');
-      sqls += sql.limit ? ' limit ' + sql.limit : '';
     } else if (sqls === 'select') {
       sqls += sql.field ? ' ' + sql.field : ' *';
       sqls += ' from ' + sql.table;
@@ -85,7 +83,7 @@ class DbMySQL {
       sqls += this.joinSql(sql, 'order');
       sqls += sql.limit ? ' limit ' + sql.limit : '';
     }
-    console.log(666.201, sqls);
+    console.log(666.111, sqls);
     return sqls;
   }
   getErr(err: any) {
@@ -93,22 +91,30 @@ class DbMySQL {
     return errs;
   }
   getResult(rows: any) {
-    var result = rows ?? null;
+    var result = rows ?? 'OK';
     return result;
   }
   query(sql: Idb, callback: any) {
     console.log(666.101, sql, callback);
-    this.pool.getConnection((error: any, connection: any) => {
-      if (error) {
-        console.log(666.102, error, connection);
-      } else {
-        connection.query(this.makeSql(sql), (err: any, rows: any) => {
+    if (sql.type === 'select') {
+      if (sql.where && (!sql.limit || sql.limit === 1) && false) {
+        // 直接返回一个obj
+        this.pool.each(this.makeSql(sql), (err: any, rows: any) => {
           console.log(666.103, err, rows);
           callback(this.getErr(err), this.getResult(rows));
-          connection.release();
+        });
+      } else {
+        this.pool.all(this.makeSql(sql), (err: any, rows: any) => {
+          console.log(666.104, err, rows);
+          callback(this.getErr(err), this.getResult(rows));
         });
       }
-    });
+    } else {
+      this.pool.run(this.makeSql(sql), (err: any, rows: any) => {
+        console.log(666.105, err, rows);
+        callback(this.getErr(err), this.getResult(rows));
+      });
+    }
   }
 }
-export default new DbMySQL(pool);
+export default new DbSQLite3(sqlite3Connection);
