@@ -1,3 +1,5 @@
+import type Idb from '../type';
+
 var sqlite3 = require('sqlite3').verbose();
 
 // sqlites数据库地址
@@ -8,18 +10,6 @@ var sqliteDbPath = path.resolve(__dirname, './sqlite3.db');
 var sqlite3Connection = new sqlite3.Database(sqliteDbPath, (err: any) => {
   if (err) throw err;
 });
-
-type Istrings = string | string[] | undefined;
-interface Idb {
-  type: string;
-  table: string;
-  field?: Istrings;
-  value?: Istrings;
-  set?: Istrings;
-  where?: Istrings;
-  order?: Istrings;
-  limit?: number;
-}
 
 class DbSQLite3 {
   pool: any;

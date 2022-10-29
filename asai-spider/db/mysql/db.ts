@@ -1,3 +1,5 @@
+import type Idb from '../type';
+
 var mysql = require('mysql');
 // 建立数据库连接池
 var pool = mysql.createPool({
@@ -7,18 +9,6 @@ var pool = mysql.createPool({
   password: '909pub', // 登录密码
   database: 'nodejsblog', // 数据库名
 });
-
-type Istrings = string | string[] | undefined;
-interface Idb {
-  type: string;
-  table: string;
-  field?: Istrings;
-  value?: Istrings;
-  set?: Istrings;
-  where?: Istrings;
-  order?: Istrings;
-  limit?: number;
-}
 
 class DbMySQL {
   pool: any;
