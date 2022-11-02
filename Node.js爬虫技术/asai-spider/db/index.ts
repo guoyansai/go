@@ -1,12 +1,12 @@
-// import db from './mysql/db'; // MySQL数据库
-import db from './sqlite/db'; // SQLite数据库
+import db from './mysql/db'; // MySQL数据库
+// import db from './sqlite/db'; // SQLite数据库
 import type Idb from './type';
 
 function sqlFail(val: any) {
-  return { code: 9090, data: val };
+  return { code: 907, data: val };
 }
 function sqlEmpty(val: string) {
-  return { code: 9092, data: val };
+  return { code: 908, data: val };
 }
 function sqlSuccess(val: any) {
   return { code: 909, data: val };

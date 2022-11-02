@@ -1,6 +1,19 @@
 const https: any = require('https');
 const path: any = require('path');
 const fs: any = require('fs');
+const iconv: any = require('iconv-lite');
+/**
+ * 睡眠模拟函数
+ * @param  {Number} numberMillis 毫秒
+ */
+function sleep(numberMillis: number) {
+  let now = new Date();
+  const exitTime = now.getTime() + numberMillis;
+  while (true) {
+    now = new Date();
+    if (now.getTime() > exitTime) return;
+  }
+}
 
 // 将url网址转变成file名
 function urlToFileName(url: string) {
@@ -105,13 +118,13 @@ function reSave(saveFile: string, re: boolean = false) {
 }
 
 // 获取 html 页面
-function getHtml(url: string) {
+function getHtml(url: string, charset: string = 'utf-8') {
   return new Promise((resolve, reject) => {
     try {
       https.get(url, (res: any) => {
         let html = '';
         res.on('data', (chunk: any) => {
-          html += chunk;
+          html += iconv.decode(chunk, charset); // 处理一些特殊的gb2312编码
         });
         res.on('end', () => {
           resolve(html);
@@ -158,6 +171,7 @@ export {
   https,
   path,
   fs,
+  sleep,
   urlToFileName,
   urlToFile,
   fileToDir,
