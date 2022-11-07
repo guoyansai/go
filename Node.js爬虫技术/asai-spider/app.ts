@@ -162,12 +162,17 @@ async function paCar(char: string, charUrl: string) {
           $(this)
             .find('dd')
             .each(function (this: any) {
+              const specUrl = $(this)
+                .find('.spec-info .info-link :nth-child(4)')
+                .attr('href');
+              let specId;
+              if (specUrl) {
+                specId = specUrl.split('spec/')[1].split('/config.html')[0];
+              }
               const tmpValue: any[] = [
                 ...seriess,
-                $(this)
-                  .find('.spec-name .name-param :nth-child(1)')
-                  .attr('data-gcjid'),
-                $(this).find('.spec-name .name-param :nth-child(1) a').text(),
+                specId,
+                $(this).find('.spec-name .name-param p .name').text(),
                 sTitle,
                 $(this).attr('data-sift1'),
                 $(this)
@@ -191,12 +196,17 @@ async function paCar(char: string, charUrl: string) {
           $(this)
             .find('dd')
             .each(function (this: any) {
+              const specUrl = $(this)
+                .find('.spec-info .info-link :nth-child(4)')
+                .attr('href');
+              let specId;
+              if (specUrl) {
+                specId = specUrl.split('spec/')[1].split('/config.html')[0];
+              }
               const tmpValue: any[] = [
                 ...seriess,
-                $(this)
-                  .find('.spec-name .name-param :nth-child(1)')
-                  .attr('data-gcjid'),
-                $(this).find('.spec-name .name-param :nth-child(1) a').text(),
+                specId,
+                $(this).find('.spec-name .name-param p .name').text(),
                 sTitle,
                 $(this).attr('data-sift1'),
                 $(this)
@@ -220,12 +230,17 @@ async function paCar(char: string, charUrl: string) {
           $(this)
             .find('dd')
             .each(function (this: any) {
+              const specUrl = $(this)
+                .find('.spec-info .info-link :nth-child(4)')
+                .attr('href');
+              let specId;
+              if (specUrl) {
+                specId = specUrl.split('spec/')[1].split('/config.html')[0];
+              }
               const tmpValue: any[] = [
                 ...seriess,
-                $(this)
-                  .find('.spec-name .name-param :nth-child(1)')
-                  .attr('data-gcjid'),
-                $(this).find('.spec-name .name-param :nth-child(1) a').text(),
+                specId,
+                $(this).find('.spec-name .name-param p .name').text(),
                 sTitle,
                 $(this).attr('data-sift1'),
                 $(this)
@@ -261,10 +276,14 @@ async function paCar(char: string, charUrl: string) {
             const yearRes = JSON.parse(res || '[]');
             yearRes.forEach((el: any) => {
               el.speclist.forEach((elc: any) => {
+                if (!elc.specid) {
+                  console.log(66666699999.3333, elc);
+                  spider.sleep(100000000 * tmSql);
+                }
                 const tmpValue: string[] = [
                   ...seriess,
-                  elc.specId,
-                  elc.specName,
+                  elc.specid,
+                  elc.specname,
                   el.name,
                   elc.syear + '款',
                   elc.price,
@@ -282,7 +301,7 @@ async function paCar(char: string, charUrl: string) {
         }
       });
       for (cars of carsVals) {
-        console.log(666.601, '车型', cars[7]);
+        console.log(666.601, '车型', cars[5], cars[6]);
         await saveCar(cars);
         console.log(666.608);
         spider.sleep(tmSql);
