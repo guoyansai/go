@@ -2,11 +2,13 @@ const https: any = require('https');
 const path: any = require('path');
 const fs: any = require('fs');
 const iconv: any = require('iconv-lite');
+export default class pa{
+
 /**
  * 睡眠模拟函数
  * @param  {Number} numberMillis 毫秒
  */
-function sleep(numberMillis: number) {
+sleep(numberMillis: number) {
   let now = new Date();
   const exitTime = now.getTime() + numberMillis;
   while (true) {
@@ -16,13 +18,13 @@ function sleep(numberMillis: number) {
 }
 
 // 将url网址转变成file名
-function urlToFileName(url: string) {
+urlToFileName(url: string) {
   let urlArr = url.split('/');
   return urlArr[urlArr.length - 1];
 }
 
 // 将url网址转变成file相对位置
-function urlToFile(url: string) {
+urlToFile(url: string) {
   let urlArr = url.split('/');
   if (urlArr.length && !urlArr[1]) {
     urlArr.splice(0, 3);
@@ -31,7 +33,7 @@ function urlToFile(url: string) {
 }
 
 // 将文件路径改为文件夹路径
-function fileToDir(filePath: string) {
+fileToDir(filePath: string) {
   let pathArr = filePath.split('/');
   if (
     pathArr[pathArr.length - 1] &&
@@ -43,7 +45,7 @@ function fileToDir(filePath: string) {
 }
 
 // 判断文件/文件夹是否存在
-function hasPath(filePath: string) {
+hasPath(filePath: string) {
   const absPath = path.resolve(__dirname, filePath);
   return new Promise<any>((resolve, reject) => {
     try {
@@ -56,9 +58,9 @@ function hasPath(filePath: string) {
   });
 }
 // 判断是否存在文件/文件夹，并返回路径
-function needNew(filePath: string) {
+needNew(filePath: string) {
   return new Promise<any>((resolve, reject) => {
-    hasPath(filePath)
+    this.hasPath(filePath)
       .then((res) => {
         if (res.data) {
           reject(res.path);
@@ -72,9 +74,9 @@ function needNew(filePath: string) {
   });
 }
 // 不存在的文件夹，直接创建
-function dirMake(dirPath: string) {
+dirMake(dirPath: string) {
   return new Promise((resolve, reject) => {
-    needNew(dirPath)
+    this.needNew(dirPath)
       .then((res: string) => {
         try {
           fs.mkdir(res, { recursive: true }, (err: any) => {
@@ -95,11 +97,11 @@ function dirMake(dirPath: string) {
 }
 
 // 不存在的文件保存，存在的文件判断处理
-function reSave(saveFile: string, re: boolean = false) {
+reSave(saveFile: string, re: boolean = false) {
   return new Promise<void>((resolve, reject) => {
-    needNew(saveFile)
+    this.needNew(saveFile)
       .then((res) => {
-        dirMake(fileToDir(saveFile))
+        this.dirMake(this.fileToDir(saveFile))
           .then(() => {
             resolve(res);
           })
@@ -118,7 +120,7 @@ function reSave(saveFile: string, re: boolean = false) {
 }
 
 // 获取 html 页面
-function getHtml(url: string, charset: string = 'utf-8') {
+getHtml(url: string, charset: string = 'utf-8') {
   return new Promise((resolve, reject) => {
     try {
       https.get(url, (res: any) => {
@@ -137,10 +139,10 @@ function getHtml(url: string, charset: string = 'utf-8') {
 }
 
 // 获取 img 图片
-function getImg(url: string, saveFile: string, re: boolean = false) {
+getImg(url: string, saveFile: string, re: boolean = false) {
   return new Promise((resolve, reject) => {
     try {
-      reSave(saveFile, re)
+      this.reSave(saveFile, re)
         .then((filePath) => {
           https.get(url, (res: any) => {
             res.setEncoding('binary');
@@ -167,18 +169,27 @@ function getImg(url: string, saveFile: string, re: boolean = false) {
     }
   });
 }
+run(fn: any) {
+  try {
+    fn;
+  } catch (e) {
+    console.log(e);
+  }
+}
+}
 export {
   https,
   path,
   fs,
-  sleep,
-  urlToFileName,
-  urlToFile,
-  fileToDir,
-  hasPath,
-  needNew,
-  dirMake,
-  reSave,
-  getHtml,
-  getImg,
+  run,
+  this.sleep,
+  this.urlToFileName,
+  this.urlToFile,
+  this.fileToDir,
+  this.hasPath,
+  this.needNew,
+  this.dirMake,
+  this.reSave,
+  this.getHtml,
+  this.getImg,
 };

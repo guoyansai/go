@@ -1,4 +1,5 @@
 import type Idb from '../type';
+const clog = false;
 
 var mysql = require('mysql');
 // 建立数据库连接池
@@ -75,7 +76,7 @@ class DbMySQL {
       sqls += this.joinSql(sql, 'order');
       sqls += sql.limit ? ' limit ' + sql.limit : '';
     }
-    console.log(666.201, sqls);
+    clog && console.log(666.201, sqls);
     return sqls;
   }
   getErr(err: any) {
@@ -87,13 +88,13 @@ class DbMySQL {
     return result;
   }
   query(sql: Idb, callback: any) {
-    console.log(666.101, sql, callback);
+    clog && console.log(666.101, sql, callback);
     this.pool.getConnection((error: any, connection: any) => {
       if (error) {
-        console.log(666.102, error, connection);
+        clog && console.log(666.102, error, connection);
       } else {
         connection.query(this.makeSql(sql), (err: any, rows: any) => {
-          console.log(666.103, err, rows);
+          clog && console.log(666.103, err, rows);
           callback(this.getErr(err), this.getResult(rows));
           connection.release();
         });

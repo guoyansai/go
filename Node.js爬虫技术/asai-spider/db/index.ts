@@ -14,14 +14,18 @@ function sqlSuccess(val: any) {
 
 export default function sqlDb(sql: Idb) {
   return new Promise((resolve, reject) => {
-    db.query(sql, (err: any, result: any) => {
-      if (err) {
-        reject(sqlFail(err));
-      } else if (!result || (Array.isArray(result) && !result.length)) {
-        resolve(sqlEmpty(sql.type + ' is null'));
-      } else {
-        resolve(sqlSuccess(result));
-      }
-    });
+    try {
+      db.query(sql, (err: any, result: any) => {
+        if (err) {
+          reject(sqlFail(err));
+        } else if (!result || (Array.isArray(result) && !result.length)) {
+          resolve(sqlEmpty(sql.type + ' is null'));
+        } else {
+          resolve(sqlSuccess(result));
+        }
+      });
+    } catch (err) {
+      reject(err);
+    }
   });
 }

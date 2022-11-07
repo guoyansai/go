@@ -32,3 +32,5 @@ coverage
 package-lock*
 * copy*
 *-lock.*
+
+cardfs/
