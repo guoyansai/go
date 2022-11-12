@@ -3,6 +3,7 @@ import db from './db';
 import type Idb from './db/type';
 import FormatDate from './utils/FormatDate';
 
+let carFields: any = {};
 const cheerio: any = require('cheerio');
 const spider = require('./utils/spider');
 
@@ -20,6 +21,17 @@ if (Date.now()) {
 }
 // 循环26个首字母
 async function sqlFirstLetter(index: number) {
+  await db({
+    type: 'select',
+    table: 'as_car_param_cn_to_en',
+    field: 'cn_name,en_name',
+  }).then((res: any) => {
+    res.data.forEach((el: any) => {
+      carFields[el.cn_name] = el.en_name;
+    });
+  });
+  console.log(666.1001, carFields);
+  // spider.sleep(tmSql*100000000000000);
   if (index < charsLen) {
     await htmlFirstLetter(chars[index]);
     spider.sleep(tmHtml);
@@ -304,10 +316,46 @@ async function paCar(char: string, charUrl: string) {
         console.log(666.601, '车型', cars[5], cars[6]);
         await saveCar(cars);
         console.log(666.608);
-        spider.sleep(tmSql);
+        spider.sleep(tmHtml);
+        await paCarParam(cars[5]);
       }
     }
   });
+}
+async function paCarParam(specId: string) {
+  if (specId) {
+    await spider
+      .getHtml(
+        'https://carif.api.autohome.com.cn/Car/Spec_ParamListBySpecList.ashx?speclist=' +
+          specId,
+        'gb2312'
+      )
+      .then(async (res: any) => {
+        const params = JSON.parse(res || '{}')?.result?.paramtypeitems || [];
+        if (params.length) {
+          const fields = ['p_chexing_id', 'p_gengxinshijian'];
+          const values = [specId, FormatDate()];
+          params.forEach((elp: any) => {
+            if (elp.paramitems && elp.paramitems.length) {
+              elp.paramitems.forEach((el: any) => {
+                const field = carFields[el.name];
+                if (field && !fields.includes(field)) {
+                  fields.push(field);
+                  values.push(
+                    el.valueitems[0].value
+                      .replaceAll('(', '')
+                      .replaceAll(')', '')
+                  );
+                }
+              });
+            }
+          });
+          await saveCarParam(fields, values);
+          console.log(666.908);
+          spider.sleep(tmHtml);
+        }
+      });
+  }
 }
 function saveCar(vals: string[]) {
   const fields: string[] = [
@@ -460,6 +508,33 @@ function saveBrand(vals: string[]) {
           table: 'as_brand',
           field: fields.join(','),
           value: '"' + vals.join('","') + '"',
+        }
+      )
+    );
+  } else {
+    return Promise.resolve();
+  }
+}
+function saveCarParam(fields: string[], values: string[]) {
+  if (values[0]) {
+    return spider.run(
+      saveDb(
+        {
+          type: 'select',
+          table: 'as_car_param',
+          field: 'p_chexing_id',
+          where: 'p_chexing_id="' + values[0] + '"',
+        },
+        {
+          type: 'update',
+          table: 'as_car_param',
+          set: 'p_gengxinshijian="' + FormatDate() + '"',
+        },
+        {
+          type: 'insert',
+          table: 'as_car_param',
+          field: fields.join(','),
+          value: '"' + values.join('","') + '"',
         }
       )
     );

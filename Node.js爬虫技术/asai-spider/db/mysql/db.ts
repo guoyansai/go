@@ -1,5 +1,5 @@
 import type Idb from '../type';
-const clog = false;
+const clog = true;
 
 var mysql = require('mysql');
 // 建立数据库连接池
