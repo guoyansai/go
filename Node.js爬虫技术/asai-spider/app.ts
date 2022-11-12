@@ -25,7 +25,7 @@ let carFields: any = {};
 const cheerio: any = require('cheerio');
 const spider = require('./utils/spider');
 
-const dirDist = '../asai-spider-qiche-dist/';
+const dirDist = '../asai-spider-qiche-dist-img/';
 const tmHtml = 200;
 const tmSql = 20;
 const tSql = 10;
