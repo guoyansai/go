@@ -36,3 +36,5 @@ package-lock*
 cardfs/
 log.txt
 firstLetter.txt
+*-dist/
+logo/*

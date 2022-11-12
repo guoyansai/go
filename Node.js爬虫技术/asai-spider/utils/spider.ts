@@ -51,6 +51,7 @@ class pa {
         fs.exists(filePath, (exists: any) => {
           resolve({ data: !!exists, path: filePath });
         });
+        // reject({ data: '默认直接创建，不走文件创建！', path: filePath });
       } catch (err) {
         reject({ data: err, path: filePath });
       }

@@ -1,20 +1,15 @@
 import type Idb from '../type';
 
-var sqlite3 = require('sqlite3').verbose();
-
-// sqlites数据库地址
-var path = require('path');
-var sqliteDbPath = path.resolve(__dirname, './sqlite3.db');
-
-// 打开sqlites数据库
-var sqlite3Connection = new sqlite3.Database(sqliteDbPath, (err: any) => {
-  if (err) throw err;
-});
-
 class DbSQLite3 {
   pool: any;
-  constructor(pool: any) {
-    this.pool = pool;
+  config: any;
+  sqlite3: any;
+  constructor(config: any) {
+    this.config = config;
+    this.sqlite3 = require('sqlite3').verbose();
+    this.pool = new this.sqlite3.Database(config.sql.database, (err: any) => {
+      if (err) throw err;
+    });
   }
   joinSql(sql: Idb, type: 'where' | 'order' | 'value' | 'set' | 'field') {
     var val = sql[type];
@@ -106,5 +101,31 @@ class DbSQLite3 {
       });
     }
   }
+  sqlFail(val: any) {
+    return { code: 907, data: val };
+  }
+  sqlEmpty(val: string) {
+    return { code: 908, data: val };
+  }
+  sqlSuccess(val: any) {
+    return { code: 909, data: val };
+  }
+  sqlDb(sql: Idb) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.query(sql, (err: any, result: any) => {
+          if (err) {
+            reject(this.sqlFail(err));
+          } else if (!result || (Array.isArray(result) && !result.length)) {
+            resolve(this.sqlEmpty(sql.type + ' is null'));
+          } else {
+            resolve(this.sqlSuccess(result));
+          }
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
 }
-export default new DbSQLite3(sqlite3Connection);
+export default DbSQLite3;

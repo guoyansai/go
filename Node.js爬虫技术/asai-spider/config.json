@@ -1,0 +1,29 @@
+{
+  "dirDist": "./",
+  "tmHtml": 200,
+  "tmSql": 20,
+  "tSql": 10,
+  "chars": "abcdefghijklmnopqrstuvwxyz",
+  "charsLen": 26,
+  "url": {
+    "firstLetter": {
+      "start": "https://www.autohome.com.cn/grade/carhtml/",
+      "end": ".html"
+    },
+    "years": {
+      "start": "https://www.autohome.com.cn/ashx/car/Spec_ListByYearId.ashx?seriesid=",
+      "middle": "&syearid=",
+      "end": ""
+    },
+    "car": {
+      "start": "https://carif.api.autohome.com.cn/Car/Spec_ParamListBySpecList.ashx?speclist="
+    }
+  },
+  "sql": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "909pub",
+    "database": "nodejsblog"
+  }
+}

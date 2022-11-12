@@ -1,5 +1,5 @@
 const https: any = require('https');
-const path: any = require('path');
+// const path: any = require('path');
 const fs: any = require('fs');
 const iconv: any = require('iconv-lite');
 export default class pa {
@@ -45,7 +45,8 @@ export default class pa {
 
   // 判断文件/文件夹是否存在
   hasPath(filePath: string) {
-    const absPath = path.resolve(__dirname, filePath);
+    // const absPath = path.resolve(__dirname, filePath);
+    const absPath = filePath;
     return new Promise<any>((resolve, reject) => {
       try {
         fs.exists(absPath, (exists: any) => {

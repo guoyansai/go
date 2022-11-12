@@ -1,4 +1,10 @@
-import db from './db';
+import dbInit from './db';
+let config: any = require('../../config.json');
+
+var mysql = require('mysql');
+// 建立数据库连接池
+var pool = mysql.createPool(config.sql);
+const db = new dbInit(pool);
 
 // 假设我们有个数据表users，有id、userName、userPassword、userType四个字段
 var a = 'select';

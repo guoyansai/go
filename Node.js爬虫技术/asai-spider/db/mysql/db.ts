@@ -1,24 +1,17 @@
 import type Idb from '../type';
-
 function clog(...arg: any) {
   // console.log(...arg);
 }
 
-var mysql = require('mysql');
-// 建立数据库连接池
-var pool = mysql.createPool({
-  host: 'localhost', // ip或域名
-  port: 3306, // 端口
-  user: 'root', // 登录账户
-  password: '909pub', // 登录密码
-  database: 'nodejsblog', // 数据库名
-});
-
 class DbMySQL {
   pool: any;
-  constructor(pool: any) {
-    this.pool = pool;
+  config: any;
+  constructor(config: any) {
+    this.config = config;
+    // 建立数据库连接池
+    this.pool = require('mysql').createPool(config.sql);
   }
+
   joinSql(sql: Idb, type: 'where' | 'order' | 'value' | 'set' | 'field') {
     var val = sql[type];
     if (Array.isArray(val)) {
@@ -104,5 +97,31 @@ class DbMySQL {
       }
     });
   }
+  sqlFail(val: any) {
+    return { code: 907, data: val };
+  }
+  sqlEmpty(val: string) {
+    return { code: 908, data: val };
+  }
+  sqlSuccess(val: any) {
+    return { code: 909, data: val };
+  }
+  sqlDb(sql: Idb) {
+    return new Promise((resolve, reject) => {
+      try {
+        this.query(sql, (err: any, result: any) => {
+          if (err) {
+            reject(this.sqlFail(err));
+          } else if (!result || (Array.isArray(result) && !result.length)) {
+            resolve(this.sqlEmpty(sql.type + ' is null'));
+          } else {
+            resolve(this.sqlSuccess(result));
+          }
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
 }
-export default new DbMySQL(pool);
+export default DbMySQL;

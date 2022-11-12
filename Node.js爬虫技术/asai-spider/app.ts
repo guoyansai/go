@@ -1,11 +1,14 @@
-const path: any = require('path');
-import db from './db';
+// const path: any = require('path');
+import dbInit from './db';
 import type Idb from './db/type';
 import FormatDate from './utils/FormatDate';
 const fs: any = require('fs');
 
+let db: any;
+let config: any = require('./config.json');
 let logrr: any[] = [];
 let logtimer: any = null;
+
 function clog(...arg: any) {
   // 在Date()前面加个!，可以关闭日志功能
   if (Date()) {
@@ -25,33 +28,21 @@ let carFields: any = {};
 const cheerio: any = require('cheerio');
 const spider = require('./utils/spider');
 
-const dirDist = '../asai-spider-qiche-dist-img/';
-const tmHtml = 200;
-const tmSql = 20;
-const tSql = 10;
-const chars = 'abcdefghijklmnopqrstuvwxyz';
-const charsLen = chars.length;
-const url = {
-  firstLetter: {
-    start: 'https://www.autohome.com.cn/grade/carhtml/',
-    end: '.html',
-  },
-  years: {
-    start:
-      'https://www.autohome.com.cn/ashx/car/Spec_ListByYearId.ashx?seriesid=',
-    middle: '&syearid=',
-    end: '',
-  },
-  car: {
-    start:
-      'https://carif.api.autohome.com.cn/Car/Spec_ParamListBySpecList.ashx?speclist=',
-  },
-};
-
 if (Date.now()) {
   start(99);
 }
 async function start(index: number) {
+  let myConfig = await fs.readFileSync('./config.json', 'utf8');
+  if (myConfig) {
+    config = JSON.parse(myConfig);
+  } else {
+    await fs.writeFileSync('./config.json', JSON.stringify(config));
+  }
+  const dbc = new dbInit(config);
+  db = (sql: Idb) => {
+    return dbc.sqlDb(sql);
+  };
+  console.log(666.99999, dbc, db);
   await fs.writeFileSync('./log.txt', FormatDate());
   await db({
     type: 'select',
@@ -66,7 +57,7 @@ async function start(index: number) {
   if (index > 26) {
     try {
       const curLetter = await fs.readFileSync('./firstLetter.txt', 'utf8');
-      index = chars.indexOf(curLetter);
+      index = config.chars.indexOf(curLetter);
     } catch (e) {
       index = 0;
     }
@@ -77,17 +68,18 @@ async function start(index: number) {
 
 // 循环26个首字母
 async function sqlFirstLetter(index: number) {
-  await fs.writeFileSync('./firstLetter.txt', chars[index]);
-  if (index < charsLen) {
-    await htmlFirstLetter(chars[index]);
-    spider.sleep(tmHtml);
+  await fs.writeFileSync('./firstLetter.txt', config.chars[index]);
+  if (index < config.charsLen) {
+    await htmlFirstLetter(config.chars[index]);
+    spider.sleep(config.tmHtml);
     sqlFirstLetter(index + 1);
   }
 }
 
 // 单个字母品牌
 async function htmlFirstLetter(char: string) {
-  const charUrl = url.firstLetter.start + char + url.firstLetter.end;
+  const charUrl =
+    config.url.firstLetter.start + char + config.url.firstLetter.end;
   char = char.toUpperCase();
   clog(666.101, '首字母' + char, charUrl);
   await saveFirstLetter(char, charUrl);
@@ -135,14 +127,16 @@ async function paCar(char: string, charUrl: string) {
     // 下面是爬取brand品牌的名称和图片
     $('dl').each(function (this: any) {
       const imgBrand = $(this).find('dl dt a img').attr('src');
+      const brandId = $(this).attr('id');
       const tmpValue: string[] = [
         char,
-        $(this).attr('id'),
+        brandId,
         $(this).attr('olr'),
         $(this).find('dl dt a').attr('href'),
         imgBrand,
         $(this).find('dl dt div a').text(),
-        spider.urlToFile(imgBrand),
+        // spider.urlToFile(imgBrand),// 获取原来的地址路径
+        'logo' + brandId + '.png',
         FormatDate(),
       ];
       valsArr.push(tmpValue);
@@ -151,7 +145,7 @@ async function paCar(char: string, charUrl: string) {
       clog(666.201, '品牌', vals[5]);
       await sqlBrand(vals);
       clog(666.208, vals[5] + '品牌爬完！');
-      spider.sleep(tmSql);
+      spider.sleep(config.tmSql);
     }
     // 下面是爬取与储存厂商品牌
     valsArr = [];
@@ -172,7 +166,7 @@ async function paCar(char: string, charUrl: string) {
       clog(666.301, '品牌厂商', vals[3]);
       await saveBrandGroup(vals);
       clog(666.308, vals[3] + '品牌厂商爬完！');
-      spider.sleep(tmSql);
+      spider.sleep(config.tmSql);
     }
     // 下面爬取品牌下车系
     valsArr = [];
@@ -207,7 +201,7 @@ async function paCar(char: string, charUrl: string) {
       clog(666.401, '车系', vals[4]);
       await saveSeries(vals);
       clog(666.408, vals[4] + '车系爬完！');
-      spider.sleep(tmSql);
+      spider.sleep(config.tmSql);
       // 下面是进入具体的车系页面爬取具体的车型
       let seriess: any[] = [vals[0], vals[1], vals[2], vals[3], vals[4]];
       let cars: any[] = [];
@@ -322,11 +316,11 @@ async function paCar(char: string, charUrl: string) {
         const years: any[] = [];
         $('#haltList li').each(function (this: any) {
           years.push([
-            url.years.start +
+            config.url.years.start +
               seriess[3] +
-              url.years.middle +
+              config.url.years.middle +
               $(this).find('a').attr('data-yearid') +
-              url.years.end,
+              config.url.years.end,
             $(this).find('a').text(),
           ]);
         });
@@ -338,7 +332,7 @@ async function paCar(char: string, charUrl: string) {
             yearRes.forEach((el: any) => {
               el.speclist.forEach((elc: any) => {
                 // if (!elc.specid) {
-                //   spider.sleep(100000000 * tmSql);
+                //   spider.sleep(100000000 * config.tmSql);
                 // }
                 const tmpValue: string[] = [
                   ...seriess,
@@ -355,30 +349,62 @@ async function paCar(char: string, charUrl: string) {
                 carsVals.push(tmpValue);
               });
             });
-            spider.sleep(tSql);
+            spider.sleep(config.tSql);
           });
-          spider.sleep(tmHtml);
+          spider.sleep(config.tmHtml);
         }
       });
       for (cars of carsVals) {
         clog(666.601, '车型', cars[5], cars[6]);
         await saveCar(cars);
         clog(666.608, cars[6] + '车型爬完！');
-        spider.sleep(tmHtml);
-        await paCarParam(cars[5]);
+        spider.sleep(config.tmHtml);
+        await paCarParam(cars);
       }
     }
   });
 }
-async function paCarParam(specId: string) {
+async function paCarParam(cars: any[]) {
+  const specId: any = cars[5];
   if (specId) {
     await spider
-      .getHtml(url.car.start + specId, 'gb2312')
+      .getHtml(config.url.car.start + specId, 'gb2312')
       .then(async (res: any) => {
         const params = JSON.parse(res || '{}')?.result?.paramtypeitems || [];
         if (params.length) {
-          const fields = ['p_chexing_id', 'p_gengxinshijian'];
-          const values = [specId, FormatDate()];
+          const fields = [
+            'p_chexing_id',
+            'p_gengxinshijian',
+            'p_shouzimu',
+            'p_pinpai',
+            'p_pinpai_id',
+            'p_pinpai_logo',
+            'p_chexi',
+            'p_chexi_id',
+          ];
+          let brandTitle: any;
+          let brandImg: any;
+          await db({
+            type: 'select',
+            table: 'as_brand',
+            field: 'brandTitle,brandImg',
+            where: 'brandId=' + cars[1],
+          }).then((res: any) => {
+            res.data.forEach((el: any) => {
+              brandTitle = el.brandTitle;
+              brandImg = el.brandImg;
+            });
+          });
+          const values = [
+            specId,
+            FormatDate(),
+            cars[0],
+            brandTitle,
+            cars[1],
+            brandImg,
+            cars[4],
+            cars[3],
+          ];
           params.forEach((elp: any) => {
             if (elp.paramitems && elp.paramitems.length) {
               elp.paramitems.forEach((el: any) => {
@@ -395,7 +421,7 @@ async function paCarParam(specId: string) {
             }
           });
           await saveCarParam(fields, values);
-          spider.sleep(tmHtml);
+          spider.sleep(config.tmHtml);
         }
       });
   }
@@ -586,7 +612,8 @@ function saveCarParam(fields: string[], values: string[]) {
   }
 }
 function saveBrandImg(vals: string[]) {
-  const absPath = path.resolve(__dirname, dirDist + 'logo/' + vals[6]);
+  // const absPath = path.resolve(__dirname, config.dirDist + 'logo/' + vals[6]);
+  const absPath = config.dirDist + 'logo/' + vals[6];
   return spider.run(spider.getImg('https:' + vals[4], absPath));
 }
 
@@ -597,27 +624,27 @@ function saveDb(select: Idb, update: Idb, insert: Idb) {
         .then((ress: any) => {
           if (ress.code === 909) {
             db(update)
-              .then((res) => {
+              .then((res: any) => {
                 clog(666.702, 'update', update.table);
                 resolve(res);
               })
-              .catch((err) => {
+              .catch((err: any) => {
                 clog(666.703, 'update', update);
                 reject(err);
               });
           } else {
             db(insert)
-              .then((res) => {
+              .then((res: any) => {
                 clog(666.704, 'insert', update.table);
                 resolve(res);
               })
-              .catch((err) => {
+              .catch((err: any) => {
                 clog(666.705, 'insert', insert);
                 reject(err);
               });
           }
         })
-        .catch((err) => {
+        .catch((err: any) => {
           clog(666.707, 'select', select);
           reject(err);
         });

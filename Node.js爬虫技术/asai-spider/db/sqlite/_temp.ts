@@ -1,4 +1,14 @@
-import db from './db';
+import dbInit from './db';
+
+let config: any = require('../../config.json');
+var sqlite3 = require('sqlite3').verbose();
+// sqlites数据库地址
+var sqliteDbPath = config.sql.database;
+// 打开sqlites数据库
+var pool = new sqlite3.Database(sqliteDbPath, (err: any) => {
+  if (err) throw err;
+});
+const db = new dbInit(pool);
 
 // 假设我们有个数据表users，有id、userName、userPassword、userType四个字段
 var a = 'select';

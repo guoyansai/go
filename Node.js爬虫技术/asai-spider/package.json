@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --respawn app.ts",
     "tsc": "tsc app.ts",
     "ncc": "npm run tsc && ncc build app.js -o ./asai-spider-qiche-dist",
-    "pkg": "npm run ncc && pkg -t win ./asai-spider-qiche-dist/index.js"
+    "pkg": "npm run ncc && pkg -t win ./asai-spider-qiche-dist/index.js -o ./asai-spider-qiche-dist/爬虫"
   },
   "author": "codroid",
   "license": "ISC",
