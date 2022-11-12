@@ -34,3 +34,5 @@ package-lock*
 *-lock.*
 
 cardfs/
+log.txt
+firstLetter.txt
