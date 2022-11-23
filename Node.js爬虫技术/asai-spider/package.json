@@ -5,6 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "dev": "ts-node-dev --respawn app.ts",
+    "deve": "ts-node-dev --respawn e.ts",
     "tsc": "tsc app.ts",
     "ncc": "npm run tsc && ncc build app.js -o ./asai-spider-qiche-dist",
     "pkg": "npm run ncc && pkg -t win ./asai-spider-qiche-dist/index.js -o ./asai-spider-qiche-dist/爬虫"
@@ -13,9 +14,11 @@
   "license": "ISC",
   "dependencies": {
     "cheerio": "1.0.0-rc.12",
+    "exceljs": "^4.3.0",
     "iconv-lite": "^0.6.3",
     "mysql": "^2.18.1",
-    "sqlite3": "^5.1.2"
+    "sqlite3": "^5.1.2",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^18.11.7",

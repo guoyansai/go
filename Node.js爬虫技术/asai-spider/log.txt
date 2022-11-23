@@ -1,4 +1,4 @@
-2022-11-12 21:28:39
+2022-11-12 22:38:38
 666.002,[object Object]
 666.101,首字母A,https://www.autohome.com.cn/grade/carhtml/a.html
 666.702,update,as_first_letter
@@ -183,3 +183,31 @@
 666.702,update,as_series
 666.408,奥迪A7L车系爬完！
 666.501,车系网址,https://www.autohome.com.cn/5998/#levelsource=000000000_0&pvareaid=101594
+666.601,车型,53488,2022款 55 TFSI quattro S-line 志远型流晶套装
+666.702,update,as_car
+666.608,2022款 55 TFSI quattro S-line 志远型流晶套装车型爬完！
+666.702,update,as_car_param
+666.601,车型,53486,2022款 55 TFSI quattro S-line 志远型曜黑套装
+666.702,update,as_car
+666.608,2022款 55 TFSI quattro S-line 志远型曜黑套装车型爬完！
+666.702,update,as_car_param
+666.601,车型,49281,2022款 55 TFSI quattro S-line edition one先行版
+666.702,update,as_car
+666.608,2022款 55 TFSI quattro S-line edition one先行版车型爬完！
+666.702,update,as_car_param
+666.601,车型,53484,2022款 55 TFSI quattro S-line 境远型流晶套装
+666.702,update,as_car
+666.608,2022款 55 TFSI quattro S-line 境远型流晶套装车型爬完！
+666.702,update,as_car_param
+666.601,车型,53483,2022款 55 TFSI quattro S-line 境远型曜黑套装
+666.702,update,as_car
+666.608,2022款 55 TFSI quattro S-line 境远型曜黑套装车型爬完！
+666.702,update,as_car_param
+666.601,车型,53490,2022款 55 TFSI quattro S-line edition executive先见版
+666.702,update,as_car
+666.608,2022款 55 TFSI quattro S-line edition executive先见版车型爬完！
+666.22,aaa
+666.123456,[object Object]
+666.22,aaa
+666.22,aaa
+666.22,aaa

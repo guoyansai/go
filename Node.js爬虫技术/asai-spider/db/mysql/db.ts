@@ -14,17 +14,76 @@ class DbMySQL {
 
   joinSql(sql: Idb, type: 'where' | 'order' | 'value' | 'set' | 'field') {
     var val = sql[type];
+    var tmp = '';
     if (Array.isArray(val)) {
-      if (val.length) {
+      const len: number = val.length;
+      if (len > 0) {
         if (type === 'where') {
-          return ' where ' + val.join(' and ');
+          tmp = ' where ';
+          let tmpx: any = '';
+          for (let i = 0; i < len; i++) {
+            let el = val[i];
+            if (el === 'or' || el === 'and') {
+              if (tmpx) {
+                tmp += ')';
+              }
+              tmpx = el;
+              i++;
+              el = val[i];
+              if (el === 'or' || el === 'and') {
+                tmp += ' ' + tmpx;
+                tmpx = el;
+                i++;
+                el = val[i];
+              }
+              tmp += ' (' + el[0] + ' ' + el[1] + ' ' + el[2];
+            } else {
+              tmp += ' ' + tmpx + ' ' + el[0] + ' ' + el[1] + ' ' + el[2];
+            }
+          }
+          tmp += ')';
+          return tmp;
         } else if (type === 'order') {
-          return ' order by ' + val.join(',');
+          tmp = ' order by';
+          for (let i = 0; i < len; i++) {
+            let el = val[i];
+            if (i > 0) {
+              tmp += ',';
+            }
+            tmp += ' ' + el[0] + ' ' + el[1];
+          }
+          return tmp;
         } else if (type === 'value') {
-          return ' values (' + val.join('),(') + ')';
+          tmp = ' values (';
+          for (let i = 0; i < len; i++) {
+            let el = val[i] as any[];
+            if (i > 0) {
+              tmp += '),(';
+            }
+            tmp += el.join(',');
+          }
+          tmp += ')';
+          return tmp;
         } else if (type === 'set') {
-          return ' set ' + val.join(',');
+          tmp = ' set ';
+          for (let i = 0; i < len; i++) {
+            let el = val[i] as [string, any][];
+            if (i > 0) {
+              tmp += ',';
+            }
+            tmp += el[0] + '=' + el[1];
+          }
+          return tmp;
         } else if (type === 'field') {
+          tmp = ' (';
+          for (let i = 0; i < len; i++) {
+            let el = val[i] as string;
+            if (i > 0) {
+              tmp += ',';
+            }
+            tmp += el;
+          }
+          tmp += ')';
           return ' (' + val.join(',') + ')';
         }
       } else {

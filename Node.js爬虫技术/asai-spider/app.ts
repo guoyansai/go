@@ -38,11 +38,16 @@ async function start(index: number) {
   } else {
     await fs.writeFileSync('./config.json', JSON.stringify(config));
   }
-  const dbc = new dbInit(config);
+  let dbc: any;
+  if (config.sql.user === 'excel') {
+  }else if (config.sql.user === 'sqlite3') {
+    dbc = new dbInit.sqliteDb(config);
+  } else {
+    dbc = new dbInit.mysqlDb(config);
+  }
   db = (sql: Idb) => {
     return dbc.sqlDb(sql);
   };
-  console.log(666.99999, dbc, db);
   await fs.writeFileSync('./log.txt', FormatDate());
   await db({
     type: 'select',

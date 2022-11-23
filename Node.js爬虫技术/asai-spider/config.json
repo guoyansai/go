@@ -22,8 +22,29 @@
   "sql": {
     "host": "localhost",
     "port": 3306,
+    "user": "excel",
+    "password": "909pub",
+    "database": "./qichezhijia.xlsx"
+  },
+  "mysql示例": {
+    "host": "localhost",
+    "port": 3306,
     "user": "root",
     "password": "909pub",
-    "database": "nodejsblog"
+    "database": "qichezhijia"
+  },
+  "sqlite3示例": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "sqlite3",
+    "password": "909pub",
+    "database": "./qichezhijia.db"
+  },
+  "excel示例": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "excel",
+    "password": "909pub",
+    "database": "./qichezhijia.xlsx"
   }
 }

@@ -37,4 +37,4 @@ cardfs/
 log.txt
 firstLetter.txt
 *-dist/
-logo/*
+*logo/*.*
